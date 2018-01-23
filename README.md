@@ -22,6 +22,12 @@ Excalibar is written in C99 with xcb, cairo and pango as well as some
 static routines from inih (which is linked to this repo as a submodule).
 "And what's the recipe ? Excalibar weaponry !"
 
+### Cloning
+this repo contains submodules, to get them clone with:
+```
+git clone --recurse-submodules https://github.com/cylgom/excalibar.git
+```
+
 ### Compiling and Installing
 first, compile and install libexcalibar:
 ```
