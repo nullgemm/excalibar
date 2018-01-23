@@ -22,45 +22,43 @@ Excalibar is written in C99 with xcb, cairo and pango as well as some
 static routines from inih (which is linked to this repo as a submodule).
 "And what's the recipe ? Excalibar weaponry !"
 
-### Cloning
-this repo contains submodules, to get them clone with:
+### Compiling and Installing
+This repo contains submodules, to get them clone with:
 ```
 git clone --recurse-submodules https://github.com/cylgom/excalibar.git
 ```
-
-### Compiling and Installing
-first, compile and install libexcalibar:
+First, compile and install libexcalibar:
 ```
 cd lib
 make
 sudo make install
 ```
-then repeat these steps for the core program:
+Then repeat these steps for the core program:
 ```
 cd ../bar
 make
 sudo make install
 ```
-while you are in the bar folder, edit and copy the config file:
+While you are in the bar folder, edit and copy the config file:
 ```
 nano excalibar.cfg
 make cpconfig
 ```
-enventually, compile and install all the plugins: (no sudo here!)
+Eventually, compile and install all the plugins: (no sudo here!)
 ```
 cd ../plugins
 make
 make install
 ```
-you can then launch excalibar as a daemon:
+You can then launch excalibar as a daemon:
 ```
 excalibar &
 ```
-and close it properly with a sigterm:
+And close it properly with a sigterm:
 ```
 pkill excalibar
 ```
-the process survives after you quit your terminal ;)
+The process survives after you quit your terminal ;)
 
 ### Greetings
 Oxodao for the support, name approval and minecraft breaks
