@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: excalibar
+Description: excalibar plugin interface
+Version: 0.0.1
+Libs: -L${libdir} -lexcalibar
+Cflags: -I${includedir}/excalibar
