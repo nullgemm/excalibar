@@ -175,12 +175,9 @@ void* plugin(void* par)
 			}
 			else
 			{
-				do
-				{
-					strncpy(workspace_string, utf8_data.strings + j, 3);
-					++j;
-				}
-				while(strcmp(workspace_string, "") == 0);
+				strncpy(workspace_string, utf8_data.strings + j,
+					utf8_data.strings_len - j);
+				j += strlen(utf8_data.strings + j) + 1;
 			}
 
 			init_tag(tag + i);
