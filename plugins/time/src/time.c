@@ -6,14 +6,25 @@
 #include <pthread.h>
 #include "plugin_config.h"
 
+char* time_format;
+
 void init_config(struct config* config)
 {
 	plugin_init_config(config);
+	time_format = strdup("%d/%m/%Y %H:%M:%S");
 }
 
 int config(const char* name, const char* value)
 {
-	return plugin_config(name, value);
+	plugin_config(name, value);
+
+	if(strcmp(name, "format") == 0)
+	{
+		free(time_format);
+		time_format = strdup(value);
+	}
+
+	return 1;
 }
 
 short init_tag(struct tag* tag)
@@ -56,11 +67,12 @@ void* plugin(void* par)
 
 		time(&timer);
 		tm_info = localtime(&timer);
-		strftime(ascii, 20, "%d/%m/%Y %H:%M:%S", tm_info);
+		strftime(ascii, 20, time_format, tm_info);
 		tag_set_strings(tag, 1, prefix, ascii, postfix);
 		pthread_mutex_unlock(&properties->mutexes_task[id + 1]);
 	}
 
+	free(time_format);
 	plugin_free();
 	return NULL;
 }
