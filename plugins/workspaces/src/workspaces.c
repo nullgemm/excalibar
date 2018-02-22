@@ -22,70 +22,34 @@ short init_tag(struct tag* tag)
 }
 
 static void show_clicked_workspace(struct properties* properties,
-	int id,
-	uint32_t previous,
-	uint32_t total)
+	uint32_t previous, uint32_t total)
 {
-	int i;
-	int j;
-	uint16_t click_pos_x;
-	int tags_added_size;
-	click_pos_x = ((xcb_button_press_event_t*)(
-				properties->x_event))->event_x;
-	tags_added_size = 0;
-	i = 0;
-	j = 0;
+	int workspace;
 
-	while(i < properties->threads_total)
+	switch(((xcb_button_press_event_t*)(properties->x_event))->detail)
 	{
-		if(properties->tags[i] == NULL)
+		case 4:
 		{
-			++i;
-			continue;
-		}
-
-		tags_added_size += (properties->tags[i] + j)->width;
-
-		if(tags_added_size < click_pos_x)
-		{
-			++j;
-
-			if(j >= properties->tags_size[i])
-			{
-				j = 0;
-				++i;
-			}
-		}
-		else
-		{
+			workspace = (previous == 0) ? total - 1 : previous - 1;
 			break;
 		}
+
+		case 5:
+		{
+			workspace = (previous == total - 1) ? 0 : previous + 1;
+			break;
+		}
+
+		default:
+		{
+			workspace = properties->click_subsection;
+		}
 	}
 
-	if(i == id)
-	{
-		if(((xcb_button_press_event_t*)(properties->x_event))->detail == 4)
-		{
-			xcb_ewmh_request_change_current_desktop(properties->ewmh_conn,
-				properties->screen_id,
-				previous == 0 ? total - 1 : previous - 1,
-				XCB_CURRENT_TIME);
-		}
-		else if(((xcb_button_press_event_t*)(properties->x_event))->detail == 5)
-		{
-			xcb_ewmh_request_change_current_desktop(properties->ewmh_conn,
-				properties->screen_id,
-				previous == total - 1 ? 0 : previous + 1,
-				XCB_CURRENT_TIME);
-		}
-		else
-		{
-			xcb_ewmh_request_change_current_desktop(properties->ewmh_conn,
-				properties->screen_id,
-				j,
-				XCB_CURRENT_TIME);
-		}
-	}
+	xcb_ewmh_request_change_current_desktop(properties->ewmh_conn,
+		properties->screen_id,
+		workspace,
+		XCB_CURRENT_TIME);
 }
 
 void* plugin(void* par)
@@ -131,7 +95,7 @@ void* plugin(void* par)
 		// change workspace if the user clicked the plugin's tags
 		if(properties->x_event_id == XCB_BUTTON_PRESS)
 		{
-			show_clicked_workspace(properties, id, workspace_id, workspaces);
+			show_clicked_workspace(properties, workspace_id, workspaces);
 		}
 
 		// gets the number of workspaces
