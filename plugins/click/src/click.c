@@ -72,7 +72,6 @@ void* plugin(void* par)
 		if(properties->x_event_id == XCB_BUTTON_PRESS)
 		{
 			system(cmd);
-			fprintf(stderr, "%s\n", text);
 		}
 
 		pthread_mutex_unlock(&properties->mutexes_task[id + 1]);
