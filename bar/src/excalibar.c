@@ -87,6 +87,65 @@ static char* get_home()
 	return home_path;
 }
 
+static int cursor_plugin(void)
+{
+	int i = 0;
+	int j = 0;
+	int tags_added_size = 0;
+	short side_unchanged = 1;
+	uint16_t click_pos_x = ((xcb_button_press_event_t*)
+			(properties.x_event))->event_x;
+
+	while(i < properties.threads_total)
+	{
+		if(properties.tags[i] == NULL)
+		{
+			++i;
+			continue;
+		}
+
+		if(side_unchanged && properties.tags[i]->side)
+		{
+			int k;
+			int l;
+			tags_added_size = properties.win_width;
+
+			for(k = i; k < properties.threads_total; ++k)
+			{
+				if(properties.tags[k] != NULL)
+				{
+					for(l = 0; l < properties.tags_size[k]; ++l)
+					{
+						tags_added_size -= (properties.tags[k] + l)->width;
+					}
+				}
+			}
+
+			side_unchanged = 0;
+		}
+
+		tags_added_size += (properties.tags[i] + j)->width;
+
+		if(tags_added_size < click_pos_x)
+		{
+			++j;
+
+			if(j >= properties.tags_size[i])
+			{
+				j = 0;
+				++i;
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	properties.click_subsection = j;
+	return i < properties.threads_total ? i : -1;
+}
+
 static int load_config(void* user,
 	const char* section,
 	const char* name,
@@ -471,9 +530,11 @@ int main(void)
 		pthread_mutex_lock(&properties.mutexes_state[0]);
 		properties.x_event_id = properties.x_event->response_type & ~0x80;
 
-		for(i = 0; i < properties.threads_total; ++i)
+		if(properties.x_event_id == XCB_BUTTON_PRESS)
 		{
-			if(properties.plugins_events[i] != NULL)
+			i = cursor_plugin();
+
+			if(i != -1)
 			{
 				for(j = 0; j < properties.plugins_events_size[i]; ++j)
 				{
@@ -483,6 +544,25 @@ int main(void)
 						pthread_mutex_lock(&properties.mutexes_task[i + 1]);
 						pthread_mutex_unlock(&properties.mutexes_state[i + 1]);
 						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			for(i = 0; i < properties.threads_total; ++i)
+			{
+				if(properties.plugins_events[i] != NULL)
+				{
+					for(j = 0; j < properties.plugins_events_size[i]; ++j)
+					{
+						if((properties.plugins_events[i][j] == properties.x_event_id)
+							|| (properties.state == 1))
+						{
+							pthread_mutex_lock(&properties.mutexes_task[i + 1]);
+							pthread_mutex_unlock(&properties.mutexes_state[i + 1]);
+							break;
+						}
 					}
 				}
 			}

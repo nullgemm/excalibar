@@ -172,85 +172,49 @@ static void map_clicked_window(struct properties* properties,
 	xcb_window_t* window_active)
 {
 	int i;
-	int j;
-	uint16_t click_pos_x;
-	int tags_added_size;
+	int window;
 	uint8_t button;
-	button = ((xcb_button_press_event_t*)(properties->x_event))->detail;
-	click_pos_x = ((xcb_button_press_event_t*)(
-				properties->x_event))->event_x;
-	tags_added_size = 0;
 	i = 0;
-	j = 0;
+	window = 0;
+	button = ((xcb_button_press_event_t*)(properties->x_event))->detail;
 
-	while(i < properties->threads_total)
+	if(button == 4 || button == 5)
 	{
-		if(properties->tags[i] == NULL)
+		for(i = 0; i < properties->tags_size[id]; ++i)
 		{
-			++i;
-			continue;
-		}
-
-		tags_added_size += (properties->tags[i] + j)->width;
-
-		if(tags_added_size < click_pos_x)
-		{
-			++j;
-
-			if(j >= properties->tags_size[i])
+			if(*window_active == windows_visible[i])
 			{
-				j = 0;
-				++i;
+				break;
 			}
 		}
-		else
+	}
+
+	switch(((xcb_button_press_event_t*)(properties->x_event))->detail)
+	{
+		case 4:
 		{
+			window = (i == 0) ? properties->tags_size[id] - 1 : i - 1;
 			break;
 		}
-	}
 
-	// maps clicked window
-	if(i == id)
-	{
-		if(button == 4 || button == 5)
+		case 5:
 		{
-			for(i = 0; i < properties->tags_size[id]; ++i)
-			{
-				if(*window_active == windows_visible[i])
-				{
-					break;
-				}
-			}
+			window = (i == properties->tags_size[id] - 1) ? 0 : i + 1;
+			break;
 		}
 
-		if(button == 4)
+		default:
 		{
-			xcb_ewmh_request_change_active_window(properties->ewmh_conn,
-				properties->screen_id,
-				windows_visible[i == 0 ? properties->tags_size[id] - 1 : i - 1],
-				XCB_EWMH_CLIENT_SOURCE_TYPE_NORMAL,
-				XCB_CURRENT_TIME,
-				*window_active);
-		}
-		else if(button == 5)
-		{
-			xcb_ewmh_request_change_active_window(properties->ewmh_conn,
-				properties->screen_id,
-				windows_visible[i == properties->tags_size[id] - 1 ? 0 : i + 1],
-				XCB_EWMH_CLIENT_SOURCE_TYPE_NORMAL,
-				XCB_CURRENT_TIME,
-				*window_active);
-		}
-		else
-		{
-			xcb_ewmh_request_change_active_window(properties->ewmh_conn,
-				properties->screen_id,
-				windows_visible[j],
-				XCB_EWMH_CLIENT_SOURCE_TYPE_NORMAL,
-				XCB_CURRENT_TIME,
-				*window_active);
+			window = properties->click_subsection;
 		}
 	}
+
+	xcb_ewmh_request_change_active_window(properties->ewmh_conn,
+		properties->screen_id,
+		windows_visible[window],
+		XCB_EWMH_CLIENT_SOURCE_TYPE_NORMAL,
+		XCB_CURRENT_TIME,
+		*window_active);
 }
 
 void* plugin(void* par)

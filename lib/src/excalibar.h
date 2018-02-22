@@ -81,6 +81,7 @@ struct properties
 	// realtime window size
 	int win_width;
 	int win_height;
+	int click_subsection;
 };
 
 #endif /*EXCALIBAR_EXCALIBAR_H*/
