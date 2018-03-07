@@ -4,6 +4,7 @@ plugins:
 	@cd cpu && make
 	@cd click && make
 	@cd example && make
+	@cd mpdcontrols && make
 	@cd mpdmonitor && make
 	@cd ram && make
 	@cd refresh && make
@@ -17,6 +18,7 @@ clean:
 	@cd cpu && make clean
 	@cd click && make clean
 	@cd example && make clean
+	@cd mpdcontrols && make clean
 	@cd mpdmonitor && make clean
 	@cd ram && make clean
 	@cd refresh && make clean
