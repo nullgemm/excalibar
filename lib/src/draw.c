@@ -233,6 +233,7 @@ static void draw_bounds(struct properties* properties, short max,
 		{
 			arr_init = properties->tags_size[i] - 1;
 			arr_stop = -1;
+			tag += arr_init;
 		}
 
 		for(j = arr_init; j != arr_stop; j += sign)
