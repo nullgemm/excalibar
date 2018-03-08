@@ -103,14 +103,24 @@ void* plugin(void* par)
 	{
 		pthread_mutex_lock(&properties->mutexes_state[id + 1]);
 
-		if(properties->state == 1
-			|| mpd_connection_get_error(conn) != MPD_ERROR_SUCCESS)
+		if(properties->state == 1)
 		{
 			break;
 		}
 
 		if(properties->x_event_id == XCB_BUTTON_PRESS)
 		{
+			if(mpd_connection_get_error(conn) != MPD_ERROR_SUCCESS)
+			{
+				conn = mpd_connection_new(host, port, timeout);
+
+				if(mpd_connection_get_error(conn) != MPD_ERROR_SUCCESS)
+				{
+					pthread_mutex_unlock(&properties->mutexes_task[id + 1]);
+					continue;
+				}
+			}
+
 			switch(properties->click_subsection)
 			{
 				case 0:
