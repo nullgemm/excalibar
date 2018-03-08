@@ -3,6 +3,7 @@
 #include <excalibar/win.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <math.h>
 #include <pthread.h>
 #include <mpd/client.h>
@@ -80,10 +81,20 @@ void* plugin(void* par)
 
 	while(1)
 	{
-		if(properties->state == 1
-			|| mpd_connection_get_error(conn) != MPD_ERROR_SUCCESS)
+		if(properties->state == 1)
 		{
 			break;
+		}
+
+		if(mpd_connection_get_error(conn) != MPD_ERROR_SUCCESS)
+		{
+			conn = mpd_connection_new(host, port, timeout);
+
+			if(mpd_connection_get_error(conn) != MPD_ERROR_SUCCESS)
+			{
+				sleep(5);
+				continue;
+			}
 		}
 
 		song = mpd_run_current_song(conn);
