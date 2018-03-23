@@ -104,7 +104,8 @@ static int cursor_plugin(void)
 			continue;
 		}
 
-		if(side_unchanged && properties.tags[i]->side)
+		// first right tag
+		if(side_unchanged == 1 && properties.tags[i]->side)
 		{
 			int k;
 			int l;
@@ -121,13 +122,23 @@ static int cursor_plugin(void)
 				}
 			}
 
-			side_unchanged = 0;
+			++side_unchanged;
 		}
 
+		// gap clicking
+		if(side_unchanged == 2 && tags_added_size > click_pos_x)
+		{
+			++side_unchanged;
+		}
+
+		// builds current tag position
 		tags_added_size += (properties.tags[i] + j)->width;
 
-		if(tags_added_size < click_pos_x)
+		// clicked after current tag
+		if(tags_added_size < click_pos_x || side_unchanged == 3)
 		{
+			// if side_unchanged == 3 nothing happens,
+			// so disabling the variable is not needed
 			++j;
 
 			if(j >= properties.tags_size[i])
@@ -136,6 +147,7 @@ static int cursor_plugin(void)
 				++i;
 			}
 		}
+		// clicked on the current tag
 		else
 		{
 			break;
