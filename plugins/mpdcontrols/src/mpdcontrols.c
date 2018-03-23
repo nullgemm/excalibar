@@ -21,9 +21,9 @@ void init_config(struct config* config)
 	host = NULL;
 	port = 0;
 	timeout = 0;
-	mpd_prev = strdup("⏮");
-	mpd_next = strdup("⏭");
-	mpd_play = strdup("⏯");
+	mpd_prev = strdup("");
+	mpd_next = strdup("");
+	mpd_play = strdup("");
 }
 
 int config(const char* name, const char* value)
