@@ -101,9 +101,14 @@ void* plugin(void* par)
 
 		if(song != NULL)
 		{
-			snprintf(text, infolen, "%s - %s",
-				mpd_song_get_tag(song, MPD_TAG_ARTIST, 0),
-				mpd_song_get_tag(song, MPD_TAG_TITLE, 0));
+			if(mpd_song_get_tag(song, MPD_TAG_TITLE, 0)) {
+				snprintf(text, infolen, "%s - %s",
+					mpd_song_get_tag(song, MPD_TAG_ARTIST, 0),
+					mpd_song_get_tag(song, MPD_TAG_TITLE, 0));
+			} else {
+				snprintf(text, infolen, "%s",
+					mpd_song_get_tag(song, MPD_TAG_NAME, 0));
+			}
 			mpd_song_free(song);
 		}
 		else
