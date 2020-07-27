@@ -25,7 +25,7 @@ static routines from inih (which is linked to this repo as a submodule).
 ### Compiling and Installing
 This repo contains submodules, to get them clone with:
 ```
-git clone --recurse-submodules https://github.com/cylgom/excalibar.git
+git clone --recurse-submodules https://github.com/nullgemm/excalibar.git
 ```
 First, compile and install libexcalibar:
 ```
